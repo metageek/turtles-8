@@ -4,6 +4,7 @@ function mkturtle()
    t.x=64
    t.y=64
    t.color=15
+   t.pen=true
    t.rt = function(dth)
       t.th += dth
       t.th %= 360
@@ -15,7 +16,9 @@ function mkturtle()
       local th = t.th / 360
       local newx = t.x + s * cos(th)
       local newy = t.y - s * sin(th)
-      line(t.x, t.y, newx, newy, t.color)
+      if t.pen then
+         line(t.x, t.y, newx, newy, t.color)
+      end
       t.x = newx
       t.y = newy
    end
@@ -25,12 +28,21 @@ function mkturtle()
    t.setcolor = function(c)
       t.color = c
    end
+   t.pu = function()
+      t.pen=false
+   end
+   t.pd = function()
+      t.pen=true
+   end
    return t
 end
 
 function spiral(t, th, dr)
    local r = 0
+   local c = 0
    while (t.onscreen()) do
+      t.setcolor(c)
+      c = (c+1)%16
       t.fd(r)
       t.rt(th)
       r += dr
