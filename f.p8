@@ -2,8 +2,9 @@ pico-8 cartridge // http://www.pico-8.com
 version 42
 __lua__
 #include turtle.lua
-cls()
+cls(7)
 t=mkturtle()
+t.setcolor(0)
 spiral(t, 117, 3)
 
 __gfx__
