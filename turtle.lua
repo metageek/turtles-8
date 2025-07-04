@@ -66,7 +66,7 @@ function mkturtle()
          return true
       end
 
-      del(t.steps, 1)
+      deli(t.steps, 1)
       t.numsteps -= 1
       return t.numsteps > 0
    end
@@ -105,9 +105,12 @@ function mkturtle()
       t.y = newy
    end
    t.jump = function(x, y, th)
-      t.x = x
-      t.y = y
-      t.th = th
+      t.x = x or 64
+      t.y = y or 64
+      t.th = th or 0
+   end
+   t.home = function()
+      t.jump()
    end
    t.onscreen = function()
       return 0 <= t.x and t.x < 128 and 0 <= t.y and t.y < 128

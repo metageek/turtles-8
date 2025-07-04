@@ -3,12 +3,17 @@ version 42
 __lua__
 #include turtle.lua
 function _init()
-   cls(4)
    t1 = mkturtle()
    t2 = mkturtle()
    t1.setcolor(0)
    t2.setcolor(3)
    spiral(t1, 117, 3)
+   jumper = mkroutine(function(r)
+     t1.home()
+     return false
+   end, false)
+   t1.exec(jumper)
+   spiral(t1, 90, 2)
    spiral(t2, 123, 3)
 end
 function _update()
@@ -16,6 +21,7 @@ function _update()
    then
         t1.hide()
         t2.hide()
+        stop()
    end
 end
 function _draw()
