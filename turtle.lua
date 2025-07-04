@@ -38,6 +38,7 @@ function runStep()
       if r ~= nil
       then
          busy = true
+         print(r._id)
          if not r._step(r)
          then
             removed[#removed + 1] = r
@@ -153,7 +154,54 @@ function mkturtle()
       t.numsteps += 1
    end
    t.exec = function(f)
+      print(f == nil)
       t.enqueue(mkroutine(f))
+   end
+   t.msgs = {}
+   t.numMsgs = 0
+   t.send = function(msg)
+      t.msgs[t.numMsgs + 1] = msg
+      t.numMsgs += 1
+   end
+   t.peekMsg = function()
+      if t.numMsgs > 0
+      then
+         return t.msgs[1]
+      else
+         return nil
+      end
+   end
+   t.recv = function(callback)
+      t.exec(function()
+            msg = t.peekMsg()
+            if msg ~= nil
+            then
+               if t.numMsgs == 1
+               then
+                  t.numMsgs = 0
+                  t.msgs = {}
+               else
+                  t.numMsgs -= 1
+                  deli(t.msgs, 1)
+               end
+               callback(msg)
+               return false
+            else
+               return true
+            end
+      end)
+   end
+   t.save = function()
+      return {
+         x = t.x,
+         y = t.y,
+         th = t.th,
+         pen = t.pen
+      }
+   end
+   t.load = function(state)
+      t.jump(state.x, state.y, state.th)
+      t.pen = state.pen
    end
    return t
 end
