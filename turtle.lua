@@ -159,22 +159,15 @@ function mkturtle()
 end
 
 function spiral(t, th, dr)
-  function mkspiral(t, th, dr)
-     function spiralStep(r)
-        r.t.rt(r.th)
-        r.t.fd(r.r)
-        r.r += r.dr
-        return r.t.onscreen()
-     end
-     r = mkroutine(spiralStep)
-     r.t = t
-     r.th = th
-     r.dr = dr
-     r.r = 0
-     return r
-  end
+   local r = 0
+   function spiralStep()
+      t.rt(th)
+      t.fd(r)
+      r += dr
+      return t.onscreen()
+   end
 
-   t.enqueue(mkspiral(t, th, dr))
+   t.exec(spiralStep)
 end
 
 function turtleDraw()
