@@ -148,9 +148,12 @@ function mkturtle()
    end
    t.steps={}
    t.numsteps = 0
-   t.exec = function(step)
+   t.enqueue = function(step)
       t.steps[t.numsteps + 1] = step
       t.numsteps += 1
+   end
+   t.exec = function(f)
+      t.enqueue(mkroutine(f))
    end
    return t
 end
@@ -171,7 +174,7 @@ function spiral(t, th, dr)
      return r
   end
 
-   t.exec(mkspiral(t, th, dr))
+   t.enqueue(mkspiral(t, th, dr))
 end
 
 function turtleDraw()

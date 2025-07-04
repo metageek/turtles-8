@@ -8,11 +8,10 @@ function _init()
    t1.setcolor(0)
    t2.setcolor(3)
    spiral(t1, 117, 3)
-   jumper = mkroutine(function(r)
+   t1.exec(function()
      t1.home()
      return false
-   end, false)
-   t1.exec(jumper)
+   end)
    spiral(t1, 90, 2)
    spiral(t2, 123, 3)
 end
