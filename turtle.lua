@@ -2,6 +2,8 @@ routines={}
 routines.rs = {}
 routines.nextid = 1
 
+turtles={}
+
 turtleLines = {}
 
 function mkLine(x1, y1, x2, y2, color)
@@ -76,11 +78,13 @@ end
 
 function mkturtle()
    local t=mkroutine(turtleStep, true)
+   turtles[t._id] = t
    t.th=-90
    t.x=64
    t.y=64
    t.color=15
    t.pen=true
+   t.visible=true
    t.rt = function(dth)
       t.th += dth
       t.th %= 360
@@ -98,6 +102,11 @@ function mkturtle()
       t.x = newx
       t.y = newy
    end
+   t.jump = function(x, y, th)
+      t.x = x
+      t.y = y
+      t.th = th
+   end
    t.onscreen = function()
       return 0 <= t.x and t.x < 128 and 0 <= t.y and t.y < 128
    end
@@ -110,6 +119,28 @@ function mkturtle()
    t.pd = function()
       t.pen=true
    end
+   t.show = function()
+      t.visible = true
+   end
+   t.hide = function()
+      t.visible = false
+   end
+   t.draw = function()
+      local s = 6
+      local th1 = t.th / 360
+      local x1 = t.x - s * cos(th1)
+      local y1 = t.y - s * sin(th1)
+      local th2 = (t.th + 90) / 360
+      local x2 = t.x + (s / 2) * cos(th2)
+      local y2 = t.y + (s / 2) * sin(th2)
+      local th3 = (t.th - 90) / 360
+      local x3 = t.x + (s / 2) * cos(th3)
+      local y3 = t.y + (s / 2) * sin(th3)
+
+      line(x1, y1, x2, y2, t.color)
+      line(x2, y2, x3, y3, t.color)
+      line(x3, y3, x1, y1, t.color)
+   end
    t.steps={}
    t.numsteps = 0
    t.exec = function(step)
@@ -120,8 +151,8 @@ function mkturtle()
 end
 
 function spiralStep(r)
-   r.t.fd(r.r)
    r.t.rt(r.th)
+   r.t.fd(r.r)
    r.r += r.dr
    return r.t.onscreen()
 end
@@ -143,5 +174,12 @@ function turtleDraw()
    for _, l in ipairs(turtleLines)
    do
       line(l.x1, l.y1, l.x2, l.y2, l.color)
+   end
+   for _, t in ipairs(turtles)
+   do
+      if t ~= nil and t.visible
+      then
+         t.draw()
+      end
    end
 end

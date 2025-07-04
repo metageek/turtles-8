@@ -12,7 +12,11 @@ function _init()
    spiral(t2, 123, 3)
 end
 function _update()
-   runStep()
+   if not runStep()
+   then
+        t1.hide()
+        t2.hide()
+   end
 end
 function _draw()
    cls(4)
