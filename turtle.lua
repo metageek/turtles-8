@@ -2,6 +2,16 @@ routines={}
 routines.rs = {}
 routines.nextid = 1
 
+turtleLines = {}
+
+function mkLine(x1, y1, x2, y2, color)
+   return {
+      x1=x1, y1=y1,
+      x2=x2, y2=y2,
+      color=color
+   }
+end
+
 -- Coroutine. step is a function which returns true if there are more
 -- steps to perform, or false if not.
 function mkroutine(step, register)
@@ -83,7 +93,7 @@ function mkturtle()
       local newx = t.x + s * cos(th)
       local newy = t.y - s * sin(th)
       if t.pen then
-         line(t.x, t.y, newx, newy, t.color)
+         turtleLines[#turtleLines + 1] = mkLine(t.x, t.y, newx, newy, t.color)
       end
       t.x = newx
       t.y = newy
@@ -125,18 +135,13 @@ function mkspiral(t, th, dr)
    return r
 end
 
-function cospiral(t, th, dr)
+function spiral(t, th, dr)
    t.exec(mkspiral(t, th, dr))
 end
 
-function spiral(t, th, dr)
-   local r = 0
-   local c = 0
-   while (t.onscreen()) do
-      t.setcolor(c)
-      c = (c+1)%16
-      t.fd(r)
-      t.rt(th)
-      r += dr
+function turtleDraw()
+   for _, l in ipairs(turtleLines)
+   do
+      line(l.x1, l.y1, l.x2, l.y2, l.color)
    end
 end

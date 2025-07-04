@@ -8,13 +8,15 @@ function _init()
    t2 = mkturtle()
    t1.setcolor(0)
    t2.setcolor(3)
-   cospiral(t1, 117, 3)
-   cospiral(t2, 123, 3)
+   spiral(t1, 117, 3)
+   spiral(t2, 123, 3)
 end
 function _update()
+   runStep()
 end
 function _draw()
-   runStep()
+   cls(4)
+   turtleDraw()
 end
 __gfx__
 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
