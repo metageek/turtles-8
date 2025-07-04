@@ -1,5 +1,65 @@
+routines={}
+routines.rs = {}
+routines.nextid = 1
+
+-- Coroutine. step is a function which returns true if there are more
+-- steps to perform, or false if not.
+function mkroutine(step, register)
+   local r={}
+   r._step = step
+   if register then
+      r._id = routines.nextid
+      routines.nextid = routines.nextid + 1
+      routines.rs[r._id] = r
+   end
+   return r
+end
+
+function run()
+   busy = true
+   while busy
+   do
+      busy = false
+      local removed = {}
+      rs = routines.rs
+      for i,r in ipairs(rs)
+      do
+         if r ~= nil
+         then
+            busy = true
+            if not r._step(r)
+            then
+               removed[#removed + 1] = r
+            end
+         end
+      end
+
+      for _, r in ipairs(removed)
+      do
+         routines.rs[r._id] = nil
+      end
+   end
+end
+
+function turtleStep(t)
+   if t.numsteps == 0
+   then
+      return false
+   end
+
+   local step = t.steps[1]
+   if step._step(step)
+   then
+      return true
+   end
+
+   del(t.steps, 1)
+   t.numsteps -= 1
+   return t.numsteps > 0
+end
+
 function mkturtle()
-   local t={}
+   local t=mkroutine(turtleStep, true)
    t.th=-90
    t.x=64
    t.y=64
@@ -34,7 +94,33 @@ function mkturtle()
    t.pd = function()
       t.pen=true
    end
+   t.steps={}
+   t.numsteps = 0
+   t.exec = function(step)
+      t.steps[t.numsteps + 1] = step
+      t.numsteps += 1
+   end
    return t
+end
+
+function spiralStep(r)
+   r.t.fd(r.r)
+   r.t.rt(r.th)
+   r.r += r.dr
+   return r.t.onscreen()
+end
+
+function mkspiral(t, th, dr)
+   r = mkroutine(spiralStep)
+   r.t = t
+   r.th = th
+   r.dr = dr
+   r.r = 0
+   return r
+end
+
+function cospiral(t, th, dr)
+   t.exec(mkspiral(t, th, dr))
 end
 
 function spiral(t, th, dr)
