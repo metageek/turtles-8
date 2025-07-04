@@ -19,26 +19,32 @@ function run()
    busy = true
    while busy
    do
-      busy = false
-      local removed = {}
-      rs = routines.rs
-      for i,r in ipairs(rs)
-      do
-         if r ~= nil
+      busy = runStep()
+   end
+end
+
+function runStep()
+   busy = false
+   local removed = {}
+   rs = routines.rs
+   for i,r in ipairs(rs)
+   do
+      if r ~= nil
+      then
+         busy = true
+         if not r._step(r)
          then
-            busy = true
-            if not r._step(r)
-            then
-               removed[#removed + 1] = r
-            end
+            removed[#removed + 1] = r
          end
       end
-
-      for _, r in ipairs(removed)
-      do
-         routines.rs[r._id] = nil
-      end
    end
+
+   for _, r in ipairs(removed)
+   do
+      routines.rs[r._id] = nil
+   end
+
+   return busy
 end
 
 function turtleStep(t)

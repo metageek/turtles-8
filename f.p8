@@ -2,15 +2,20 @@ pico-8 cartridge // http://www.pico-8.com
 version 42
 __lua__
 #include turtle.lua
-cls(4)
-t1 = mkturtle()
-t2 = mkturtle()
-t1.setcolor(0)
-t2.setcolor(3)
-cospiral(t1, 117, 3)
-cospiral(t2, 123, 3)
-run()
-
+function _init()
+   cls(4)
+   t1 = mkturtle()
+   t2 = mkturtle()
+   t1.setcolor(0)
+   t2.setcolor(3)
+   cospiral(t1, 117, 3)
+   cospiral(t2, 123, 3)
+end
+function _update()
+end
+function _draw()
+   runStep()
+end
 __gfx__
 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
