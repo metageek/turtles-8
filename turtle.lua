@@ -6,14 +6,6 @@ turtles={}
 
 turtleLines = {}
 
-function mkLine(x1, y1, x2, y2, color)
-   return {
-      x1=x1, y1=y1,
-      x2=x2, y2=y2,
-      color=color
-   }
-end
-
 -- Coroutine. step is a function which returns true if there are more
 -- steps to perform, or false if not.
 function mkroutine(step, register)
@@ -27,7 +19,9 @@ function mkroutine(step, register)
    return r
 end
 
-function run()
+-- Not for use in a game loop. Instead, call runStep() from _update()
+-- and turtleDraw() from _draw().
+function runTurtles()
    busy = true
    while busy
    do
@@ -59,24 +53,32 @@ function runStep()
    return busy
 end
 
-function turtleStep(t)
-   if t.numsteps == 0
-   then
-      return false
-   end
-
-   local step = t.steps[1]
-   if step._step(step)
-   then
-      return true
-   end
-
-   del(t.steps, 1)
-   t.numsteps -= 1
-   return t.numsteps > 0
-end
-
 function mkturtle()
+   function turtleStep(t)
+      if t.numsteps == 0
+      then
+         return false
+      end
+
+      local step = t.steps[1]
+      if step._step(step)
+      then
+         return true
+      end
+
+      del(t.steps, 1)
+      t.numsteps -= 1
+      return t.numsteps > 0
+   end
+
+   function mkLine(x1, y1, x2, y2, color)
+      return {
+         x1=x1, y1=y1,
+         x2=x2, y2=y2,
+         color=color
+      }
+   end
+
    local t=mkroutine(turtleStep, true)
    turtles[t._id] = t
    t.th=-90
@@ -150,23 +152,22 @@ function mkturtle()
    return t
 end
 
-function spiralStep(r)
-   r.t.rt(r.th)
-   r.t.fd(r.r)
-   r.r += r.dr
-   return r.t.onscreen()
-end
-
-function mkspiral(t, th, dr)
-   r = mkroutine(spiralStep)
-   r.t = t
-   r.th = th
-   r.dr = dr
-   r.r = 0
-   return r
-end
-
 function spiral(t, th, dr)
+  function mkspiral(t, th, dr)
+     function spiralStep(r)
+        r.t.rt(r.th)
+        r.t.fd(r.r)
+        r.r += r.dr
+        return r.t.onscreen()
+     end
+     r = mkroutine(spiralStep)
+     r.t = t
+     r.th = th
+     r.dr = dr
+     r.r = 0
+     return r
+  end
+
    t.exec(mkspiral(t, th, dr))
 end
 
